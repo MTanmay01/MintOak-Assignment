@@ -30,6 +30,13 @@ class HomeFragment: Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.midSortBtn.setOnClickListener {
+            viewmodel.getJsonData(sortByMid = true)
+        }
+        binding.tidSortBtn.setOnClickListener {
+            viewmodel.getJsonData(sortByMid = false)
+        }
+
         lifecycleScope.launch {
             viewmodel.parentItemFlow.collect {
                 when (it) {
