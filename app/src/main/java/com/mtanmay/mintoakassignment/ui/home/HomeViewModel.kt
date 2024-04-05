@@ -3,7 +3,9 @@ package com.mtanmay.mintoakassignment.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mtanmay.data.repository.JSONDataRepositoryImpl
-import com.mtanmay.domain.models.ParentItem
+import com.mtanmay.domain.models.BaseParentItem
+import com.mtanmay.domain.models.ParentItemMID
+import com.mtanmay.domain.models.ParentItemTID
 import com.mtanmay.domain.response.JSONResponse
 import com.mtanmay.mintoakassignment.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,17 +21,17 @@ class HomeViewModel @Inject constructor(
     private val repositoryImpl: JSONDataRepositoryImpl
 ): ViewModel() {
 
-    private val _parentItemsFlow = MutableStateFlow<JSONResponse<List<ParentItem>>>(JSONResponse.Loading)
-    val parentItemFlow: StateFlow<JSONResponse<List<ParentItem>>>
+    private val _parentItemsFlow = MutableStateFlow<JSONResponse<List<BaseParentItem>>>(JSONResponse.Loading)
+    val parentItemFlow: StateFlow<JSONResponse<List<BaseParentItem>>>
         get() = _parentItemsFlow.asStateFlow()
 
     init {
-        getJsonData()
+        getJsonData(true)
     }
 
-    private fun getJsonData() {
+    fun getJsonData(sortByMid: Boolean) {
         viewModelScope.launch {
-            when (val parentItem = repositoryImpl.loadJsonData(BuildConfig.JSON_FILE)) {
+            when (val parentItem = repositoryImpl.loadJsonData(BuildConfig.JSON_FILE, sortByMid)) {
                 JSONResponse.Loading -> {
                     _parentItemsFlow.update { JSONResponse.Loading }
                 }

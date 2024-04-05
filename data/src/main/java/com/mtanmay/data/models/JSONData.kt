@@ -1,9 +1,9 @@
 package com.mtanmay.data.models
 
 import com.google.gson.annotations.SerializedName
-import com.mtanmay.domain.models.ChildItem
+import com.mtanmay.domain.models.ChildItemTID
 import com.mtanmay.domain.models.ChildItemMID
-import com.mtanmay.domain.models.ParentItem
+import com.mtanmay.domain.models.ParentItemMID
 import com.mtanmay.domain.models.ParentItemTID
 
 /**
@@ -21,21 +21,21 @@ data class InnerSortData(
 )
 
 /**
- * Mapping JSON file data stored with [JSONData] to [ParentItem] list (domain model)
+ * Mapping JSON file data stored with [JSONData] to [ParentItemMID] list (domain model)
  * by selecting unique MIDs and for each MID selecting only the unique TIDs
  */
-fun JSONData.toParentItem(): List<ParentItem> {
+fun JSONData.toParentItemMID(): List<ParentItemMID> {
     return sort
         .groupBy { it.mID }
         .map { (mid, list) ->
-            ParentItem(
+            ParentItemMID(
                 mid = mid,
                 entries = list
                     .map {
-                         ChildItem(
+                         ChildItemTID(
                              tid = it.tID,
-                             amount = it.amount,
-                             narration = it.narration
+                             mAmount = it.amount,
+                             mNarration = it.narration
                          )
                     }
                     .distinct()
@@ -56,8 +56,8 @@ fun JSONData.toParentItemTID(): List<ParentItemTID> {
                     .map {
                          ChildItemMID(
                              mid = it.mID,
-                             amount = it.amount,
-                             narration = it.narration
+                             mAmount = it.amount,
+                             mNarration = it.narration
                          )
                     }
                     .distinct()

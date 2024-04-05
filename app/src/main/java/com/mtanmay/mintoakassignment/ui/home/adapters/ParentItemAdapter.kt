@@ -5,12 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mtanmay.domain.models.ParentItem
+import com.mtanmay.domain.models.BaseParentItem
+import com.mtanmay.domain.models.ParentItemMID
+import com.mtanmay.domain.models.ParentItemTID
 import com.mtanmay.mintoakassignment.R
 import com.mtanmay.mintoakassignment.databinding.ParentDataItemBinding
 
 class ParentItemAdapter(
-    private var items: List<ParentItem>
+    private var items: List<BaseParentItem>
 ): RecyclerView.Adapter<ParentItemAdapter.ParentItemVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentItemVH {
@@ -44,29 +46,55 @@ class ParentItemAdapter(
         private val binding: ParentDataItemBinding
     ): RecyclerView.ViewHolder(binding.root) {
 
-        fun onBind(item: ParentItem, onExpandAction: () -> Unit) {
+        fun onBind(item: BaseParentItem, onExpandAction: () -> Unit) {
             binding.apply {
+                when (item) {
+                    is ParentItemMID -> {
+                        itemMid.text = "MID: ${item.mid}"
 
-                itemMid.text = "MID: ${item.mid}"
+                        childRv.apply {
+                            layoutManager = LinearLayoutManager(binding.root.context)
+                            setHasFixedSize(true)
+                            adapter = ChildItemAdapter(item.entries)
+                        }
 
-                childRv.apply {
-                    layoutManager = LinearLayoutManager(binding.root.context)
-                    setHasFixedSize(true)
-                    adapter = ChildItemAdapter(item.entries)
-                }
+                        val isExpanded = item.isExpanded
 
-                val isExpanded = item.isExpanded
+                        childRv.visibility = if (isExpanded) View.VISIBLE else View.GONE
 
-                childRv.visibility = if (isExpanded) View.VISIBLE else View.GONE
+                        expandBtn.setImageResource(
+                            if (isExpanded) R.drawable.ic_arrow_up
+                            else R.drawable.ic_arrow_down
+                        )
 
-                expandBtn.setImageResource(
-                    if (isExpanded) R.drawable.ic_arrow_up
-                    else R.drawable.ic_arrow_down
-                )
+                        binding.root.setOnClickListener {
+                            onExpandAction()
+                            item.isExpanded = !item.isExpanded
+                        }
+                    }
+                    is ParentItemTID -> {
+                        itemMid.text = "TID: ${item.tid}"
 
-                binding.root.setOnClickListener {
-                    onExpandAction()
-                    item.isExpanded = !item.isExpanded
+                        childRv.apply {
+                            layoutManager = LinearLayoutManager(binding.root.context)
+                            setHasFixedSize(true)
+                            adapter = ChildItemAdapter(item.entries)
+                        }
+
+                        val isExpanded = item.isExpanded
+
+                        childRv.visibility = if (isExpanded) View.VISIBLE else View.GONE
+
+                        expandBtn.setImageResource(
+                            if (isExpanded) R.drawable.ic_arrow_up
+                            else R.drawable.ic_arrow_down
+                        )
+
+                        binding.root.setOnClickListener {
+                            onExpandAction()
+                            item.isExpanded = !item.isExpanded
+                        }
+                    }
                 }
             }
         }
